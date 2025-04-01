@@ -1,67 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_meal_planner/data/mock_recipes.dart';
 import 'package:recipe_meal_planner/models/recipe.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:recipe_meal_planner/service/recipe_service.dart';
+import '../models/recipe.dart';
+import '../data/mock_recipes.dart'; // Use mock data if no API is available yet
+import '../services/recipe_service.dart';
+import 'recipe_details_screen.dart'; // Import the recipe service
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final RecipeService _recipeService = RecipeService();
+  List<Recipe> recipes = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecipes();
+  }
+
+  // Fetch recipes from API or use mock data
+  void _loadRecipes() async {
+    try {
+      final fetchedRecipes = await _recipeService.fetchRecipes();
+      setState(() {
+        recipes = fetchedRecipes;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading recipes: $e');
+      setState(() {
+        recipes = mockRecipes; // Fallback to mock data
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Ethiopian Recipes'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-          ),
-          itemCount: mockRecipes.length,
-          itemBuilder: (context, index) {
-            final recipe = mockRecipes[index];
-            return Card(
-              elevation: 4.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: recipe.imageUrl,
-                      height: 120,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      recipe.name,
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Wrap(
-                      spacing: 6,
-                      children: recipe.categories
-                          .map((category) => Chip(label: Text(category)))
-                          .toList(),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: recipes.length,
+              itemBuilder: (context, index) {
+                final recipe = recipes[index];
+                return ListTile(
+                  leading: Image.network(recipe.imageUrl, width: 50, height: 50),
+                  title: Text(recipe.title),
+                  subtitle: Text(recipe.description),
+                  onTap: () {
+                    // Navigate to Recipe Details screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RecipeDetailsScreen(recipe: recipe),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
     );
   }
 }
-

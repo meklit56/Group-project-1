@@ -2,23 +2,15 @@ import 'package:recipe_meal_planner/models/recipe.dart';
 
 List<Recipe> mockRecipes = [
   Recipe(
-    name: 'Injera with Doro Wat',
-    imageUrl: 'https://example.com/injera_doro_wat.jpg',
-    categories: ['Meat', 'Traditional'],
+    title: 'Doro Wot',
+    description: 'Spicy Ethiopian chicken stew.',
+    imageUrl: 'https://example.com/doro_wot.jpg',
+    instructions: 'Cook chicken with spices and serve with injera.', ingredients: [],
   ),
   Recipe(
-    name: 'Shiro',
-    imageUrl: 'https://example.com/shiro.jpg',
-    categories: ['Vegan', 'Gluten-Free'],
-  ),
-  Recipe(
-    name: 'Kitfo',
-    imageUrl: 'https://example.com/kitfo.jpg',
-    categories: ['Meat', 'Traditional'],
-  ),
-  Recipe(
-    name: 'Atkilt Wot',
-    imageUrl: 'https://example.com/atkilt_wot.jpg',
-    categories: ['Vegan', 'Gluten-Free'],
+    title: 'Injera',
+    description: 'Traditional Ethiopian flatbread.',
+    imageUrl: 'https://example.com/injera.jpg',
+    instructions: 'Ferment the dough and cook it on a hot pan.', ingredients: [],
   ),
 ];
